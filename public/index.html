@@ -1,93 +1,24 @@
 <!doctype html>
-<html>
+<html lang="en" ng-app="jbApp">
   <head>
-    <title>Faux</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <title>JukeBaux</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="app.css"/>
+    <!--dependencies-->
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <!--modules, components, etc. -->
+    <script src="app.js"></script>
   </head>
-
   <body>
-    <div class="container">
-      <h1>Faux</h1>
-      <div id="left-col">
-        <!-- Information about the current player and the current song -->
-        <div id="player">
-          <div id="current-user">
-            {{username}} -- {{currentDevice.name}}
-          </div>
-          <div id="current-song">
-            <div id="album-cover">
-              <img src="{{currentSong.album_url}}">
-            </div>
-            <div id="current_song_wrapper">
-              <div id="current-song-name">
-                {{currentSong.name}}
-              </div>
-              <div id="progress-bar-wrapper">
-                <!-- TODO implement progess bar-->
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="action-wrapper">
-          <div id="actions">
-            <button class="btn btn-default" id="play-music">play</button>
-            <button class="btn btn-default" id="pause-music">pause</button>
-          </div>
-          <div id="search-box-wrapper">
-            <input type="" name=""> <!-- TODO -->
-            <button>Search</button> <!-- TODO Trigger search with query-->
-          </div>
-          <div id="result-wrapper"> <!-- TODO after proof of concept should use material libraries-->
-            <!--
-            for result in results:
-              <div class="result-member">
-                <img src="{{result.album_url}}">
-                {{result.name}}
-                <button>Add</button> //addd song to queue
-              </div>
-            -->
-          </div>
-        </div>
-      </div>
-      <div id="right-col">
-        <!--
-          for queued in queue:
-            <div class="queue-member">
-              <img src="{{queue.album_url}}">
-              {{queue.name}}
-              <button>X</button> //remove from queue
-            </div>
-        -->
-      </div>
-    </div>
-
-    
-
-    <script src="TODO replace with angular 1 CDN"></script>
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script> <!-- TODO unclear if needed -->
-    <script>
-      (function() { /* TODO replace with angular onclick listeners through to the controler which will then use the node backend. */
-
-        document.getElementById('play-music').addEventListener('click', function() {
-          $.ajax({
-              url: '/play',
-              data: {
-                'access_token': access_token
-              }
-          });
-        }, false);
-
-        document.getElementById('pause-music').addEventListener('click', function() {
-          $.ajax({
-              url: '/pause',
-              data: {
-                'access_token': access_token
-              }
-          });
-        }, false);
-
-      })();
-    </script>
+    <div>JukeBaux</div>
+    <button>
+      <a href="/login">Host A Session</a>
+    </button>
+    <button>
+      <a href="/join">Join A Session</a>
+    </button>
+    <div ng-view></div>
   </body>
 </html>
-

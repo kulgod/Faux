@@ -5,12 +5,17 @@ First you will need to create a file called `keys.config` it should take the for
 ```
 exports.keys = {
 	client_id : 'YOUR CLIENT ID',
-	client_secret : 'YOUR SECRET', 
-	redirect_uri : 'http://localhost:8888/callback' 
+	client_secret : 'YOUR SECRET',
+	redirect_uri : 'http://localhost:8888/callback'
 }
 ```
 
 run `npm install`
+(may also need to run:
+	`npm install express`
+	`npm install request`
+	`npm install cookie-parser`)
 then run `node app.js`
 
-App will be hosted on port 8888.
+
+Then open http://localhost:8888 in your browser.
