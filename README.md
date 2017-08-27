@@ -11,10 +11,17 @@ exports.keys = {
 ```
 
 run `npm install`
-(may also need to run:
-	`npm install express`
-	`npm install request`
-	`npm install cookie-parser`)
+
+may also need to run:
+```
+	npm install express
+	npm install request
+	npm install cookie-parser
+	npm install mongodb
+	npm install mongoose
+```
+
+
 then run `node app.js`
 
 
