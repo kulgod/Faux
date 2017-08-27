@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" ng-app="host">
+  <head>
+    <title>JukeBaux</title>
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/app.css">
+    <link rel="stylesheet" href="host.css">
+
+    <!--dependencies-->
+    <script src="/bower_components/angular/angular.js"></script>
+    <!--modules, components, etc. -->
+    <script src="host.module.js"></script>
+    <script src="spotify.service.js"></script>
+    <script src="host.controller.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="bar">
+        <button id="nav-button" onclick="openNav()"></button>
+        <div id="head">Faux</div>
+        <div id="current-user">{{::user.display_name}}</div>
+      </h1>
+      <div id="side-nav" class="side-nav">
+        <a>Listen</a>
+        <a>Queue</a>
+        <a>Session</a>
+      </div>
+
+    </div>
+  </body>
+</html>

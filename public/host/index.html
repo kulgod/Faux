@@ -3,28 +3,42 @@
   <head>
     <title>JukeBaux</title>
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/app.css">
+    <link rel="stylesheet" href="host.css">
     <!--dependencies-->
     <script src="/bower_components/angular/angular.js"></script>
     <!--modules, components, etc. -->
-    <script src="host.js"></script>
+    <script src="host.module.js"></script>
+    <script src="spotify.service.js"></script>
+    <script src="host.controller.js"></script>
   </head>
-
   <body ng-controller="HostController">
-    <div class="container">
-      <h1>JukeBaux</h1>
-      <div id="left-col">
-        <!-- Information about the current player and the current song -->
-        <div id="player">
-          <div id="current-user">
-            {{username}} -- {{currentDevice.name}}
-          </div>
+    <div id="container">
+      <h1 class="bar">
+        <button id="nav-button" onclick="openNav()"></button>
+        <div id="head">Faux</div>
+        <div id="current-user">{{::user.display_name}}</div>
+      </h1>
+
+      <div id="side-nav" class="side-nav">
+        <a>Listen</a>
+        <a>Queue</a>
+        <a>Session</a>
+      </div>
+
+      <div id="left-col" ng-controller="ActionController">
+        Currently Playing On: {{player.name}}
+        <div id ="player-wrapper">
           <div id="current-song">
             <div id="album-cover">
-              <img src="{{currentSong.album_url}}">
+              <img src="{{currentSong.album_url}}" style="height:300px;width:300px">
             </div>
             <div id="current_song_wrapper">
               <div id="current-song-name">
                 {{currentSong.name}}
+              </div>
+              <div id="current-artist-names">
+                {{currentSong.artists}}
               </div>
               <div id="progress-bar-wrapper">
                 <!-- TODO implement progess bar-->
@@ -32,64 +46,47 @@
             </div>
           </div>
         </div>
+
         <div id="action-wrapper">
           <div id="actions">
-            <button class="btn btn-default" id="play-music">play</button>
-            <button class="btn btn-default" id="pause-music">pause</button>
-          </div>
-          <div id="search-box-wrapper">
-            <input type="" name=""> <!-- TODO -->
-            <button>Search</button> <!-- TODO Trigger search with query-->
-          </div>
-          <div id="result-wrapper"> <!-- TODO after proof of concept should use material libraries-->
-            <!--
-            for result in results:
-              <div class="result-member">
-                <img src="{{result.album_url}}">
-                {{result.name}}
-                <button>Add</button> //addd song to queue
-              </div>
-            -->
+            <button ng-click="previous()" class="btn btn-default" id="previous-music">previous</button>
+            <button ng-click="play()" class="btn btn-default" id="play-music">play</button>
+            <button ng-click="pause()" class="btn btn-default" id="pause-music">pause</button>
+            <button ng-click="next()" class="btn btn-default" id="next-music">next</button>
           </div>
         </div>
       </div>
-      <div id="right-col">
-        <!--
-          for queued in queue:
-            <div class="queue-member">
-              <img src="{{queued.album_url}}">
-              {{queued.name}}
-              <button>X</button> //remove from queue
-            </div>
-        -->
+
+      <div id="right-col" ng-controller="ActionController as a">
+        <div id="search-box-wrapper" class="footer">
+          <form id="search-form">
+            <input type="text" placeholder="Search for songs" ng-model="a.keywords" ng-change="a.search()"/>
+          </form>
+        </div>
+        <div id="result-wrapper">
+          <ul class="result-container">
+            <li class="result-item" ng-repeat="item in a.results">
+              <strong>{{$index + 1}}</strong> {{item.name}}: {{item.artists}}
+            </li>
+            <li ng-if="a.results.length === 0">
+              <strong>No results found...</strong>
+            </li>
+          </ul>
+        </div>
       </div>
+
     </div>
-
-
-<!-- TODO: authenticate user info, do login stuff -->
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script> <!-- TODO unclear if needed -->
     <script>
-      (function() { /* TODO replace with angular onclick listeners through to the controler which will then use the node backend. */
-
-        document.getElementById('play-music').addEventListener('click', function() {
-          $.ajax({
-              url: '/play',
-              data: {
-                'access_token': access_token
-              }
-          });
-        }, false);
-
-        document.getElementById('pause-music').addEventListener('click', function() {
-          $.ajax({
-              url: '/pause',
-              data: {
-                'access_token': access_token
-              }
-          });
-        }, false);
-
-      })();
+    function openNav() {
+      document.getElementById("side-nav").style.width = "10%";
+      document.getElementById("container").style.marginLeft = "10%";
+      document.getElementById("nav-button").onclick = function() { closeNav() };
+    }
+    function closeNav() {
+      document.getElementById("side-nav").style.width = "0";
+      document.getElementById("container").style.marginLeft = "0";
+      document.getElementById("nav-button").onclick = function() { openNav() };
+    }
     </script>
   </body>
 </html>

@@ -2,23 +2,25 @@
 <html lang="en" ng-app="jbApp">
   <head>
     <meta charset="utf-8">
-    <title>JukeBaux</title>
+    <title>JukeBaux Home Page</title>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="app.css"/>
-    <!--dependencies-->
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-route/angular-route.js"></script>
-    <!--modules, components, etc. -->
-    <script src="app.js"></script>
   </head>
   <body>
-    <div>JukeBaux</div>
-    <button>
-      <a href="/login">Host A Session</a>
-    </button>
-    <button>
-      <a href="/join">Join A Session</a>
-    </button>
-    <div ng-view></div>
+    <h1>JukeBaux</h1>
+    <div class="content">
+      <p>Host a session with your own account or join an existing one</p>
+      <div class="buttons">
+        <button class="spotify" onClick="javascript:window.location.href='/api/login'">
+          Host
+        </button>
+        <form>
+          <input type="text" placeholder="Enter session code"/>
+        </form>
+        <button class="spotify">
+          <a href="/join">Join</a>
+        </button>
+      </div>
+    </div>
   </body>
 </html>

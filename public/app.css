@@ -1,3 +1,37 @@
 body {
   padding-top: 20px;
+  background-color: rgb(30,30,30);
+  color: white;
+  padding: 0;
+}
+
+h1 {
+  background-color: rgb(20,20,20);
+  margin: 0;
+  text-align: center;
+  padding-left: 2%;
+  padding-top: 10%;
+  padding-bottom: 5%;
+}
+
+div.content {
+  padding: 2%;
+  text-align: center;
+}
+
+button.spotify {
+  background-color: #4CAF50;
+  text-align: center;
+  color: white;
+  margin: 2%;
+  padding: 10px 20px;
+  width: 100px;
+  border-radius: 50px;
+  border: none;
+  outline: none;
+}
+
+a {
+  color: white;
+  font-style: none;
 }
