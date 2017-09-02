@@ -20,8 +20,6 @@ may also need to run:
 	npm install mongodb
 	npm install mongoose
 ```
-
-
 then run `node app.js`
 
 

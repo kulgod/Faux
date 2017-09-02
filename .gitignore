@@ -1,2 +1,4 @@
 keys.config
 node_modules/
+public/bower_components/
+package-lock.json

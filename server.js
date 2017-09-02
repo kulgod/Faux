@@ -35,6 +35,13 @@ var generateRandomString = function(length) {
   return text;
 };
 
+var getCodeFromArtists = function(artists, length) {
+  var artist = artists[Math.floor(Math.random() * length)].name;
+  var keys = artist.split(' ');
+  var keyword = keys.sort(function(a,b) { return b.length - a.length })[0]
+  return keyword.toLowerCase();
+};
+
 var stateKey = 'spotify_auth_state';
 
 var app = express();
@@ -48,7 +55,7 @@ app.get('/api/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email user-modify-playback-state user-read-playback-state';
+  var scope = 'user-read-private user-read-email user-modify-playback-state user-read-playback-state user-top-read';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -61,7 +68,7 @@ app.get('/api/login', function(req, res) {
 
 app.get('/callback', function(req, res) {
 
-  // your application requests refresh and access tokens
+  // the application requests refresh and access tokens
   // after checking the state parameter
 
   var code = req.query.code || null;
@@ -95,35 +102,52 @@ app.get('/callback', function(req, res) {
             refresh_token = body.refresh_token;
         var sessionId = generateRandomString(5);
 
-        var options = {
+        var code_options = {
+          url: 'https://api.spotify.com/v1/me/top/artists?limit=50',
+          headers: { 'Authorization': 'Bearer ' + access_token },
+          json: true
+        };
+
+        var user_options = {
           url: 'https://api.spotify.com/v1/me',
           headers: { 'Authorization': 'Bearer ' + access_token },
           json: true
         };
 
-        // use the access token to access the Spotify Web API
-        request.get(options, function(error, response, body) {
-          var userSession = new Session({
-            id: sessionId,
-            host: body.display_name,
-            access_token: access_token,
-            refresh_token: refresh_token,
-            started_at: new Date()
-          });
+        request.get(code_options, function(error, response, body) {
+          if (!error) {
+            var items = body.items;
+            var total = body.total;
+            sessionId = getCodeFromArtists(items, total);
+          } else {
+            console.log('error getting top artists');
+          }
+          request.get(user_options, function(error, response, body) {
+            var userSession = new Session({
+              id: sessionId,
+              host: body.display_name,
+              access_token: access_token,
+              refresh_token: refresh_token,
+              started_at: new Date()
+            });
 
-          userSession.save(function(err) {
-            if (err) console.log(err);
-            else console.log("Saved Successfully");
+            userSession.save(function(err) {
+              if (err) console.log(err);
+              else {
+                console.log("Saved Successfully");
+                console.log(userSession);
+              }
+            });
+
+            //pass the token to the browser to make requests from there
+            res.redirect('/host/#?' +
+              querystring.stringify({
+                access_token: access_token,
+                refresh_token: refresh_token,
+                session: sessionId
+              }));
           });
         });
-
-        // we can also pass the token to the browser to make requests from there
-        res.redirect('/host/#?' +
-          querystring.stringify({
-            access_token: access_token,
-            refresh_token: refresh_token,
-            session: sessionId
-          }));
       } else {
         res.redirect('/#' +
           querystring.stringify({
@@ -152,6 +176,26 @@ app.get('/api/refresh_token', function(req, res) {
       var access_token = body.access_token;
       res.send({
         'access_token': access_token
+      });
+    }
+  });
+});
+
+app.get('/api/join', function(req, res) {
+  var user = req.query.user;
+  var code = req.query.code.toLowerCase();
+
+  Session.findOne({id: code}, 'id access_token refresh_token', function(err, session) {
+    if (err || !session) {
+      res.status(400);
+      console.log('/api/join attempt failed');
+    } else {
+      var access_token = session.access_token;
+      var refresh_token = session.refresh_token;
+      console.log(access_token);
+      res.send({
+        'access_token': access_token,
+        'refresh_token': refresh_token
       });
     }
   });

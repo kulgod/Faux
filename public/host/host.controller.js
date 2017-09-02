@@ -61,18 +61,22 @@ host.controller('ActionController', ['$rootScope', '$scope', '$timeout', 'spotif
     }
 
     ctrl.search = function() {
-      spotify.search($rootScope.tokens.access_token, ctrl.keywords,defaultSearchType,5).then(
-        function success(response) {
-          var tracks = response.data.tracks;
-          var artists = response.data.artists;
-          var albums = response.data.albums;
-          ctrl.results = pushItems(tracks.items);
-        },
-        function error(response) {
-          spotify.errorCallback(response, "ActionController: error searching for " + ctrl.keywords);
-          ctrl.results = [];
-        }
-      );
+      if (ctrl.keywords.length != 0) {
+        spotify.search($rootScope.tokens.access_token, ctrl.keywords,defaultSearchType,5).then(
+          function success(response) {
+            var tracks = response.data.tracks;
+            var artists = response.data.artists;
+            var albums = response.data.albums;
+            ctrl.results = pushItems(tracks.items);
+          },
+          function error(response) {
+            spotify.errorCallback(response, "ActionController: error searching for " + ctrl.keywords);
+            ctrl.results = [];
+          }
+        );
+      } else {
+        ctrl.results = [];
+      }
     };
 
     function player(endpoint) {

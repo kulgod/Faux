@@ -31,7 +31,12 @@ button.spotify {
   outline: none;
 }
 
-a {
+form {
+  color: black;
+}
+
+a, a:hover, a:link, a:visited {
   color: white;
   font-style: none;
+  text-decoration: none;
 }

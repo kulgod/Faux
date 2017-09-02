@@ -52,7 +52,7 @@ img.resize {
 }
 
 #container {
-  transition: 0.5s;
+  transition: 0.4s;
   position: relative;
   min-height: 100%;
   padding-bottom: 15%;
@@ -68,7 +68,7 @@ img.resize {
   background-color: black;
   overflow-x: hidden;
   padding-top: 5%;
-  transition: 0.5s;
+  transition: 0.4s;
 }
 
 .side-nav a {
