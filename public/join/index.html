@@ -8,12 +8,12 @@
 
     <!--dependencies-->
     <script src="/bower_components/angular/angular.js"></script>
+    <script src="/ng-spotify/ng-spotify.js"></script>
     <!--modules, components, etc. -->
     <script src="join.module.js"></script>
-    <script src="spotify.service.js"></script>
     <script src="join.controller.js"></script>
   </head>
-  <body>
+  <body ng-controller="JoinController">
     <div class="container">
       <h1 class="bar">
         <button id="nav-button" onclick="openNav()"></button>

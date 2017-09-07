@@ -18,9 +18,9 @@ app.controller('JoinController', ['$scope','$http','$window', '$httpParamSeriali
         function success(response) {
           var query = $httpParamSerializer({
             access_token: response.data.access_token,
-            refresh_token: response.data.refresh_token
+            refresh_token: response.data.refresh_token,
+            session: response.data.session
           });
-          console.log(query);
           $window.open('/join/#?' + query, '_self');
         }
       );

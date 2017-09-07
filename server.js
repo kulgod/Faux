@@ -190,12 +190,10 @@ app.get('/api/join', function(req, res) {
       res.status(400);
       console.log('/api/join attempt failed');
     } else {
-      var access_token = session.access_token;
-      var refresh_token = session.refresh_token;
-      console.log(access_token);
       res.send({
-        'access_token': access_token,
-        'refresh_token': refresh_token
+        'access_token': session.access_token,
+        'refresh_token': session.refresh_token,
+        'session': session.id
       });
     }
   });

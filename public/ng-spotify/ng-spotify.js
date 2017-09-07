@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('host').service('spotify', ['$rootScope', '$location', '$http',
+angular.module('ng-spotify', []).factory('spotify', ['$rootScope', '$location', '$http',
   function($rootScope, $location, $http) {
-    var server_url = 'http://localhost:8888/api/';
+    var server_url = 'http://localhost:8888/api/'; //Depends on where the Node.js server is being hosted
     var getUser = function(access_token) {
       return $http({
         method: 'GET',
@@ -58,7 +58,7 @@ angular.module('host').service('spotify', ['$rootScope', '$location', '$http',
         }).then(
           function success(response) {
             $rootScope.tokens.access_token = response.data.access_token;
-            console.log(response.data.access_token);
+            console.log(response.access_token);
           },
           function error(response) {
             console.log("Tried refresh and failed");
