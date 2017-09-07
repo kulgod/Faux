@@ -31,10 +31,10 @@ app.controller('JoinController', ['$scope','$http','$window', '$httpParamSeriali
 app.config(function($routeProvider, $locationProvider) {
   $routeProvider
     .when('/home', {
-      templateUrl: 'home.html'
+      templateUrl: 'templates/home.html'
     })
     .when('/join-login', {
-      templateUrl: 'join-login.html',
+      templateUrl: 'templates/join-login.html',
       controller: 'JoinController'
     })
     .otherwise('/home');

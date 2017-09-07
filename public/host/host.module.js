@@ -1,4 +1,4 @@
-angular.module('host', [])
+angular.module('host', ['ng-spotify'])
   .config( function($locationProvider) {
     $locationProvider.hashPrefix('');
   });
