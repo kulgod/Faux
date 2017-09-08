@@ -20,7 +20,9 @@ may also need to run:
 	npm install mongodb
 	npm install mongoose
 ```
-then run `node app.js`
+
+
+then run `npm start`
 
 
 Then open http://localhost:8888 in your browser.
