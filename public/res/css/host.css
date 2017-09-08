@@ -28,7 +28,7 @@ img.resize {
 }
 
 #nav-button {
-  background-image: url("/img/side-nav.png");
+  background-image: url("/res/img/side-nav.png");
   background-size: 18px 18px;
   background-repeat: no-repeat;
   background-position: center;

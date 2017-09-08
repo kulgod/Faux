@@ -2,8 +2,8 @@
 
 var host = angular.module('host');
 
-host.controller('HostController', ['$scope', '$rootScope', '$location', 'spotify',
-  function HostController($scope, $rootScope, $location, spotify) {
+host.controller('HostController', ['$scope', '$rootScope', '$location', '$window', 'spotify',
+  function HostController($scope, $rootScope, $location, $window, spotify) {
     function getUser(access_token) {
       spotify.getUser(access_token).then(
         function successCallback(response) {
@@ -27,21 +27,34 @@ host.controller('HostController', ['$scope', '$rootScope', '$location', 'spotify
     }
 
     (function () {
-      $rootScope.tokens = $location.search(); //access_token, refresh_token, and sessionId
-      var access_token = $rootScope.tokens.access_token;
+      var tokens = $location.search();
+      if (!tokens.access_token && !$window.sessionStorage.access_token) {
+        console.log("Failed");
+        $window.open('/', '_self');
+        return;
+      }
+      if (tokens.access_token) {
+        $window.sessionStorage.access_token = tokens.access_token;
+        $window.sessionStorage.refresh_token = tokens.refresh_token;
+        $window.sessionStorage.sessionId = tokens.sessionId;
+        $window.sessionStorage.timeout = tokens.timeout;
+      }
+      var access_token = $window.sessionStorage.access_token;
       getUser(access_token);
       getPlayer(access_token);
     })();
   }
 ]);
 
-host.controller('ActionController', ['$rootScope', '$scope', '$timeout', 'spotify',
-  function ActionController($rootScope, $scope, $timeout, spotify) {
-    var ctrl = this;
+host.controller('ActionController', ['$window', '$scope', '$timeout', 'spotify',
+  function ActionController($window, $scope, $timeout, spotify) {
+
+    var self = this;
+    self.keywords = "";
+    self.results = [];
+
     var defaultSearchType = 'artist,album,track';
 
-    ctrl.keywords = "";
-    ctrl.results = [];
     $scope.previous = function() { player('previous'); };
     $scope.play = function() { player('play'); };
     $scope.pause = function() { player('pause'); };
@@ -60,27 +73,27 @@ host.controller('ActionController', ['$rootScope', '$scope', '$timeout', 'spotif
       return ret;
     }
 
-    ctrl.search = function() {
-      if (ctrl.keywords.length != 0) {
-        spotify.search($rootScope.tokens.access_token, ctrl.keywords,defaultSearchType,5).then(
+    self.search = function() {
+      if (self.keywords.length != 0) {
+        spotify.search($window.sessionStorage.access_token, self.keywords,defaultSearchType,5).then(
           function success(response) {
             var tracks = response.data.tracks;
             var artists = response.data.artists;
             var albums = response.data.albums;
-            ctrl.results = pushItems(tracks.items);
+            self.results = pushItems(tracks.items);
           },
           function error(response) {
-            spotify.errorCallback(response, "ActionController: error searching for " + ctrl.keywords);
-            ctrl.results = [];
+            spotify.errorCallback(response, "ActionController: error searching for " + self.keywords);
+            self.results = [];
           }
         );
       } else {
-        ctrl.results = [];
+        self.results = [];
       }
     };
 
     function player(endpoint) {
-      var access_token = $rootScope.tokens.access_token;
+      var access_token = $window.sessionStorage.access_token;
       spotify.player(access_token, endpoint).then(
         function successCallback(response) {
           $timeout(function() {
@@ -94,7 +107,7 @@ host.controller('ActionController', ['$rootScope', '$scope', '$timeout', 'spotif
     }
 
     function getPlayer() {
-      var access_token = $rootScope.tokens.access_token;
+      var access_token = $window.sessionStorage.access_token;
       spotify.player(access_token, 'currently-playing').then(
         function successCallback(response) {
           var data = response.data;
@@ -108,7 +121,7 @@ host.controller('ActionController', ['$rootScope', '$scope', '$timeout', 'spotif
           } else {
             $scope.currentSong = {
               name: "No Song Currently Playing",
-              album_url: "/img/default-artwork.png"
+              album_url: "/res/img/default-artwork.png"
             };
           }
         },

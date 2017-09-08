@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('ng-spotify', []).factory('spotify', ['$rootScope', '$location', '$http',
-  function($rootScope, $location, $http) {
+angular.module('ng-spotify', []).factory('spotify', ['$window', '$location', '$http',
+  function($window, $location, $http) {
     var server_url = 'http://localhost:8888/api/'; //Depends on where the Node.js server is being hosted
     var getUser = function(access_token) {
       return $http({
@@ -48,7 +48,7 @@ angular.module('ng-spotify', []).factory('spotify', ['$rootScope', '$location', 
     //TODO: TEST GETTING REFRESH TOKEN
     var errorCallback = function(response, message) {
       if (response.statusCode == 401) {
-        var refresh_token = $rootScope.tokens.refresh_token;
+        var refresh_token = $window.sessionStorage.refresh_token;
         $http({
           method: 'GET',
           url: server_url + 'refresh_token',
@@ -57,7 +57,7 @@ angular.module('ng-spotify', []).factory('spotify', ['$rootScope', '$location', 
           }
         }).then(
           function success(response) {
-            $rootScope.tokens.access_token = response.data.access_token;
+            $window.sessionStorage.access_token = response.data.access_token;
             console.log(response.access_token);
           },
           function error(response) {
