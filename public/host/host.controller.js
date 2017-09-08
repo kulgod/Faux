@@ -46,20 +46,13 @@ host.controller('HostController', ['$scope', '$rootScope', '$location', '$window
   }
 ]);
 
-host.controller('ActionController', ['$window', '$scope', '$timeout', 'spotify',
-  function ActionController($window, $scope, $timeout, spotify) {
-
+host.controller('SearchController', ['$window', '$scope', 'spotify',
+  function SearchController($window, $scope, spotify) {
     var self = this;
     self.keywords = "";
     self.results = [];
 
     var defaultSearchType = 'artist,album,track';
-
-    $scope.previous = function() { player('previous'); };
-    $scope.play = function() { player('play'); };
-    $scope.pause = function() { player('pause'); };
-    $scope.next = function() { player('next'); };
-
     function pushItems(items) {
       var ret = [];
       items.forEach(function(t) {
@@ -91,6 +84,16 @@ host.controller('ActionController', ['$window', '$scope', '$timeout', 'spotify',
         self.results = [];
       }
     };
+  }
+]);
+
+host.controller('ActionController', ['$window', '$scope', '$timeout', 'spotify',
+  function ActionController($window, $scope, $timeout, spotify) {
+
+    $scope.previous = function() { player('previous'); };
+    $scope.play = function() { player('play'); };
+    $scope.pause = function() { player('pause'); };
+    $scope.next = function() { player('next'); };
 
     function player(endpoint) {
       var access_token = $window.sessionStorage.access_token;
