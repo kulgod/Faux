@@ -47,8 +47,9 @@ angular.module('ng-spotify', []).factory('spotify', ['$window', '$location', '$h
     //GETTING REFRESH TOKEN STILL NOT TESTED
     //TODO: TEST GETTING REFRESH TOKEN
     var errorCallback = function(response, message) {
-      if (response.statusCode == 401) {
+      if (response.status == 401) {
         var refresh_token = $window.sessionStorage.refresh_token;
+        var ret = 0;
         $http({
           method: 'GET',
           url: server_url + 'refresh_token',
@@ -58,16 +59,16 @@ angular.module('ng-spotify', []).factory('spotify', ['$window', '$location', '$h
         }).then(
           function success(response) {
             $window.sessionStorage.access_token = response.data.access_token;
-            console.log(response.access_token);
           },
           function error(response) {
             console.log("Tried refresh and failed");
-            console.log(response);
           }
         );
       } else {
-        console.log(message);
+        console.log(response);
       }
+
+      console.log(message);
     };
 
     return {

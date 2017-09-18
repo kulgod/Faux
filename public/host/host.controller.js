@@ -29,7 +29,6 @@ host.controller('HostController', ['$scope', '$rootScope', '$location', '$window
     (function () {
       var tokens = $location.search();
       if (!tokens.access_token && !$window.sessionStorage.access_token) {
-        console.log("Failed");
         $window.open('/', '_self');
         return;
       }
@@ -38,6 +37,7 @@ host.controller('HostController', ['$scope', '$rootScope', '$location', '$window
         $window.sessionStorage.refresh_token = tokens.refresh_token;
         $window.sessionStorage.sessionId = tokens.sessionId;
         $window.sessionStorage.timeout = tokens.timeout;
+        $location.search({});
       }
       var access_token = $window.sessionStorage.access_token;
       getUser(access_token);
@@ -89,7 +89,13 @@ host.controller('SearchController', ['$window', '$scope', 'spotify',
 
 host.controller('ActionController', ['$window', '$scope', '$timeout', 'spotify',
   function ActionController($window, $scope, $timeout, spotify) {
-
+    $scope.song_id = '';
+    $scope.currentSong = {
+      name: "No Song Currently Playing",
+      album_url: "/res/img/default-artwork.png",
+      is_playing: false,
+      progress: 0
+    };
     $scope.previous = function() { player('previous'); };
     $scope.play = function() { player('play'); };
     $scope.pause = function() { player('pause'); };
@@ -115,16 +121,20 @@ host.controller('ActionController', ['$window', '$scope', '$timeout', 'spotify',
         function successCallback(response) {
           var data = response.data;
           if (data.item != undefined) {
+            $scope.song_id = data.item.id;
             $scope.currentSong = {
                   name: data.item.name,
                   artists: reduceArtists(data.item.artists),
                   album_url: data.item.album.images[1].url,
-                  is_playing: data.is_playing
+                  is_playing: data.is_playing,
+                  progress: data.progress_ms
             };
           } else {
             $scope.currentSong = {
               name: "No Song Currently Playing",
-              album_url: "/res/img/default-artwork.png"
+              album_url: "/res/img/default-artwork.png",
+              is_playing: false,
+              progress: 0
             };
           }
         },
@@ -133,7 +143,35 @@ host.controller('ActionController', ['$window', '$scope', '$timeout', 'spotify',
         }
       );
     }
-    getPlayer();
+    var socket = io.connect('http://localhost:8888');
+
+    socket.on('message', function(data) {
+      if (data.message) console.log('Received from Server: ' + data.message);
+      else console.log(data);
+    });
+
+    socket.emit('start', {
+      session: $window.sessionStorage.sessionId,
+      access_token: $window.sessionStorage.access_token
+    });
+
+    socket.on('stream', function(data) {
+      if (data.is_playing) {
+        if (data.song_id != $scope.song_id) {
+          getPlayer();
+        } else {
+          $scope.$apply(function() {
+            $scope.currentSong.progress = data.progress;
+            $scope.currentSong.is_playing = data.is_playing;
+          });
+        }
+      } else {
+        $scope.$apply(function() {
+          $scope.currentSong.is_playing = data.is_playing;
+        });
+      }
+    });
+
   }
 ]);
 

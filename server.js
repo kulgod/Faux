@@ -10,6 +10,7 @@ var keys = require('./keys.config');
 
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
+var socket_io = require('socket.io');  //Socket.io websockets framework
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
@@ -162,6 +163,7 @@ app.get('/callback', function(req, res) {
 
 app.get('/api/refresh_token', function(req, res) {
   // requesting access token from refresh token
+  //TODO: Update Session document with new token
   var refresh_token = req.query.refresh_token;
   var authOptions = {
     url: 'https://accounts.spotify.com/api/token',
@@ -176,9 +178,14 @@ app.get('/api/refresh_token', function(req, res) {
   request.post(authOptions, function(error, response, body) {
     if (!error && response.statusCode === 200) {
       var access_token = body.access_token;
+      console.log(access_token);
       res.send({
         'access_token': access_token
       });
+    } else {
+      res.status(response.statusCode);
+      res.send(body);
+      console.log(error);
     }
   });
 });
@@ -215,6 +222,8 @@ app.get('/api/getuser', function(req, res) {
       res.send(body);
     } else {
       console.log("Error trying to get user profile");
+      res.status(response.statusCode);
+      res.send(body);
     }
   });
 });
@@ -242,7 +251,7 @@ app.get('/api/search', function(req, res) {
     } else {
       console.log("Error searching for " + search_query.q);
       res.status(code);
-      res.send(response.body);
+      res.send(body);
     }
   });
 });
@@ -264,7 +273,8 @@ function playerControl(endpoint, access_token, method, res) {
       res.send(body);
     } else {
       console.log("Error trying to " + endpoint + " music");
-      console.log(error);
+      res.status(code);
+      res.send(body);
     }
   });
 }
@@ -299,4 +309,53 @@ app.get('/api/devices', function(req, res) {
 
 
 console.log('Listening on 8888');
-app.listen(8888);
+var server = app.listen(8888);
+
+var io = socket_io.listen(server);
+
+io.sockets.on('connection', function(socket) {
+  socket.emit('message', {
+    message: 'connection successful'
+  });
+
+  socket.on('start', function(data) {
+    var room = data.session;
+    socket.access_token = data.access_token;
+    socket.join(room);
+    var timeout = setInterval(pollPlayer, 2000, socket, room); //TODO: Find a way to avoid overlap in these requests
+
+    //Creates its own stop command
+    socket.on('end', function(data) {
+      clearInterval(timeout);
+      socket.removeAllListeners('end');
+    });
+  });
+
+  socket.on('join', function(data) {
+    socket.join(data.session);
+  });
+
+});
+
+var pollPlayer = function(socket, room) {
+  var options = {
+      url: 'https://api.spotify.com/v1/me/player',
+      method: 'GET',
+      headers: {'Authorization': 'Bearer ' + socket.access_token}
+  };
+  request.get(options, function(error, response, body) {
+    var code = response.statusCode;
+    var success = (code == 200 || code == 204);
+    body = JSON.parse(body);
+
+    if (!error && success) {
+      io.sockets.in(room).emit('stream', {
+        is_playing: body.is_playing,
+        progress: body.progress_ms,
+        song_id: body.item.id
+      });
+    } else {
+      console.log(Date.now(), "Error trying to poll player");
+    }
+  });
+};

@@ -8,6 +8,7 @@
 
     <!--dependencies-->
     <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/socket.io/socket.io.js"></script>
     <script src="/ng-spotify/ng-spotify.js"></script>
     <!--modules, components, etc. -->
     <script src="join.module.js"></script>
@@ -20,7 +21,7 @@
         <div id="head">Faux</div>
         <div id="current-user">{{::user.display_name}}</div>
       </h1>
-      
+
       <div id="side-nav" class="side-nav">
         <a>Listen</a>
         <a>Queue</a>
@@ -51,13 +52,43 @@
         <div id="action-wrapper">
           <div id="actions">
             <button ng-click="previous()" class="btn btn-default" id="previous-music">previous</button>
-            <button ng-click="play()" class="btn btn-default" id="play-music">play</button>
-            <button ng-click="pause()" class="btn btn-default" id="pause-music">pause</button>
+            <button ng-hide="currentSong.is_playing" ng-click="play()" class="btn btn-default" id="play-music">play</button>
+            <button ng-show="currentSong.is_playing" ng-click="pause()" class="btn btn-default" id="pause-music">pause</button>
             <button ng-click="next()" class="btn btn-default" id="next-music">next</button>
           </div>
         </div>
       </div>
 
+      <div id="right-col" ng-controller="SearchController as a">
+        <div id="search-box-wrapper" class="footer">
+          <form id="search-form">
+            <input type="text" placeholder="Search for songs" ng-model="a.keywords" ng-change="a.search()"/>
+          </form>
+        </div>
+        <div id="result-wrapper">
+          <ul class="result-container">
+            <li class="result-item" ng-repeat="item in a.results">
+              <strong>{{$index + 1}}</strong> {{item.name}}: {{item.artists}}
+            </li>
+            <li ng-if="a.results.length === 0">
+              <strong>No results found...</strong>
+            </li>
+          </ul>
+        </div>
+      </div>
+
     </div>
+    <script>
+    function openNav() {
+      document.getElementById("side-nav").style.width = "10%";
+      document.getElementById("container").style.marginLeft = "10%";
+      document.getElementById("nav-button").onclick = function() { closeNav() };
+    }
+    function closeNav() {
+      document.getElementById("side-nav").style.width = "0";
+      document.getElementById("container").style.marginLeft = "0";
+      document.getElementById("nav-button").onclick = function() { openNav() };
+    }
+    </script>
   </body>
 </html>

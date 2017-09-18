@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/res/css/host.css">
     <!--dependencies-->
     <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/socket.io/socket.io.js"></script>
     <script src="/ng-spotify/ng-spotify.js"></script>
     <!--modules, components, etc. -->
     <script src="host.module.js"></script>
@@ -42,6 +43,7 @@
                 {{currentSong.artists}}
               </div>
               <div id="progress-bar-wrapper">
+                {{currentSong.progress}}
                 <!-- TODO implement progess bar-->
               </div>
             </div>
@@ -51,8 +53,8 @@
         <div id="action-wrapper">
           <div id="actions">
             <button ng-click="previous()" class="btn btn-default" id="previous-music">previous</button>
-            <button ng-click="play()" class="btn btn-default" id="play-music">play</button>
-            <button ng-click="pause()" class="btn btn-default" id="pause-music">pause</button>
+            <button ng-hide="currentSong.is_playing" ng-click="play()" class="btn btn-default" id="play-music">play</button>
+            <button ng-show="currentSong.is_playing" ng-click="pause()" class="btn btn-default" id="pause-music">pause</button>
             <button ng-click="next()" class="btn btn-default" id="next-music">next</button>
           </div>
         </div>
