@@ -1,0 +1,17 @@
+<div id="right-col">
+  <div id="search-box-wrapper" class="footer">
+    <form id="search-form">
+      <input type="text" placeholder="Search for songs" ng-model="$ctrl.keywords" ng-change="$ctrl.search()"/>
+    </form>
+  </div>
+  <div id="result-wrapper">
+    <ul class="result-container">
+      <li class="result-item" ng-repeat="item in $ctrl.results">
+        <strong>{{$index + 1}}</strong> {{item.name}}: {{item.artists}}
+      </li>
+      <li ng-if="$ctrl.results.length === 0">
+        <strong>No results found...</strong>
+      </li>
+    </ul>
+  </div>
+</div>

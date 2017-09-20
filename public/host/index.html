@@ -7,76 +7,30 @@
     <link rel="stylesheet" href="/res/css/host.css">
     <!--dependencies-->
     <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/angular-route/angular-route.js"></script>
     <script src="/bower_components/socket.io/socket.io.js"></script>
     <script src="/ng-spotify/ng-spotify.js"></script>
     <!--modules, components, etc. -->
     <script src="host.module.js"></script>
     <script src="host.controller.js"></script>
-
+    <script src="host.player-view.js"></script>
+    <script src="search-view.js"></script>
   </head>
   <body ng-controller="HostController">
     <div id="container">
       <h1 class="bar">
         <button id="nav-button" onclick="openNav()"></button>
-        <div id="head">Faux</div>
+        <div id="head"><a href="/">Faux</a></div>
         <div id="current-user">{{::user.display_name}}</div>
       </h1>
 
       <div id="side-nav" class="side-nav">
-        <a>Listen</a>
-        <a>Queue</a>
-        <a>Session</a>
+        <a href="/host/#listen">Listen</a>
+        <a href="/host/#queue">Queue</a>
+        <a href="/host/#session">Session</a>
       </div>
 
-      <div id="left-col" ng-controller="ActionController">
-        Currently Playing On: {{player.name}}
-        <div id ="player-wrapper">
-          <div id="current-song">
-            <div id="album-cover">
-              <img src="{{currentSong.album_url}}" style="height:300px;width:300px">
-            </div>
-            <div id="current_song_wrapper">
-              <div id="current-song-name">
-                {{currentSong.name}}
-              </div>
-              <div id="current-artist-names">
-                {{currentSong.artists}}
-              </div>
-              <div id="progress-bar-wrapper">
-                {{currentSong.progress}}
-                <!-- TODO implement progess bar-->
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="action-wrapper">
-          <div id="actions">
-            <button ng-click="previous()" class="btn btn-default" id="previous-music">previous</button>
-            <button ng-hide="currentSong.is_playing" ng-click="play()" class="btn btn-default" id="play-music">play</button>
-            <button ng-show="currentSong.is_playing" ng-click="pause()" class="btn btn-default" id="pause-music">pause</button>
-            <button ng-click="next()" class="btn btn-default" id="next-music">next</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="right-col" ng-controller="SearchController as a">
-        <div id="search-box-wrapper" class="footer">
-          <form id="search-form">
-            <input type="text" placeholder="Search for songs" ng-model="a.keywords" ng-change="a.search()"/>
-          </form>
-        </div>
-        <div id="result-wrapper">
-          <ul class="result-container">
-            <li class="result-item" ng-repeat="item in a.results">
-              <strong>{{$index + 1}}</strong> {{item.name}}: {{item.artists}}
-            </li>
-            <li ng-if="a.results.length === 0">
-              <strong>No results found...</strong>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <div ng-view></div>
 
     </div>
     <script>

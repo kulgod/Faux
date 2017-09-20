@@ -1,0 +1,10 @@
+<div id="queue-wrapper">
+  <ul class="queue-container">
+    <li class="queue-item" ng-repeat="item in $ctrl.queue">
+      <strong>{{$index + 1}}</strong> {{item.name}}: {{item.artists}}
+    </li>
+    <li ng-if="$ctrl.results.length === 0">
+      <strong>Queue is empty</strong>
+    </li>
+  </ul>
+</div>

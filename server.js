@@ -274,6 +274,7 @@ function playerControl(endpoint, access_token, method, res) {
     } else {
       console.log("Error trying to " + endpoint + " music");
       res.status(code);
+      console.log(body);
       res.send(body);
     }
   });
@@ -322,12 +323,14 @@ io.sockets.on('connection', function(socket) {
     var room = data.session;
     socket.access_token = data.access_token;
     socket.join(room);
-    var timeout = setInterval(pollPlayer, 2000, socket, room); //TODO: Find a way to avoid overlap in these requests
+    var timeout = setInterval(pollPlayer, 2500, socket, room); //TODO: Find a way to avoid overlap in these requests
 
     //Creates its own stop command
     socket.on('end', function(data) {
-      clearInterval(timeout);
-      socket.removeAllListeners('end');
+      clearInterval(timeout);        //stop polling spotify.
+      socket.to(room).emit('leave'); //send message to others to leave
+      socket.leave(room);            //leave the room
+      socket.removeAllListeners('end'); //may or may not be necessary
     });
   });
 
@@ -344,11 +347,11 @@ var pollPlayer = function(socket, room) {
       headers: {'Authorization': 'Bearer ' + socket.access_token}
   };
   request.get(options, function(error, response, body) {
-    var code = response.statusCode;
+    var code = response.statusCode || null;
     var success = (code == 200 || code == 204);
-    body = JSON.parse(body);
 
     if (!error && success) {
+      body = JSON.parse(body);
       io.sockets.in(room).emit('stream', {
         is_playing: body.is_playing,
         progress: body.progress_ms,
